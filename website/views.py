@@ -1,9 +1,9 @@
 from flask import Blueprint, Response,render_template
-# from camera import VideoCamera
+from camera import VideoCamera
 
 views = Blueprint('views',__name__)
 
-views.route ('/')
+@views.route ('/')
 def index():
     return render_template('index.html')
 
@@ -13,7 +13,7 @@ def gen (camera):
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
-views.route ('/video_feed')
+@views.route ('/video_feed')
 def video_feed():
-    return Response(gen(),
+    return Response(gen(VideoCamera),
                     mimetype='multipart/x-mixed-replace; boundary=frame')

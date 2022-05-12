@@ -88,7 +88,7 @@ class VideoCamera(object):
                     py.click()
 
 
-def main():
+def main1():
     # Main video capture as webcamera
     vid = cv2.VideoCapture(0)
     py.FAILSAFE = False
@@ -105,8 +105,8 @@ def main():
                                     min_detection_confidence=0.8,
                                     min_tracking_confidence=0.5)
     pTime = 0
-
-    while True:
+    checker=1
+    while checker==1:
         # Video read
         var, img = vid.read()
 
@@ -144,6 +144,7 @@ def main():
 
             cv2.imshow("video", img)
             if cv2.waitKey(1) & 0xFF == ord('q'):
+                checker=0
                 break
 
 
@@ -170,5 +171,4 @@ def click(results, mpHands):
             if (distance.euclidean(a, b) < 0.06):
                 py.click()
 
-main()
-
+main1()

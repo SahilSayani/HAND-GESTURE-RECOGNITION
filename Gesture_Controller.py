@@ -160,28 +160,6 @@ class Controller:
         dist = round((hand_result.landmark[8].x - Controller.pinchstartxcoord)*10,1)
         return dist
     
-    def changesystembrightness():
-        pass
-        # currentBrightnessLv = sbcontrol.get_brightness()/100.0
-        # currentBrightnessLv += Controller.pinchlv/50.0
-        # if currentBrightnessLv > 1.0:
-        #     currentBrightnessLv = 1.0
-        # elif currentBrightnessLv < 0.0:
-        #     currentBrightnessLv = 0.0       
-        # sbcontrol.fade_brightness(int(100*currentBrightnessLv) , start = sbcontrol.get_brightness())
-    
-    def changesystemvolume():
-        pass
-        # devices = AudioUtilities.GetSpeakers()
-        # interface = devices.Activate(IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
-        # volume = cast(interface, POINTER(IAudioEndpointVolume))
-        # currentVolumeLv = volume.GetMasterVolumeLevelScalar()
-        # currentVolumeLv += Controller.pinchlv/50.0
-        # if currentVolumeLv > 1.0:
-        #     currentVolumeLv = 1.0
-        # elif currentVolumeLv < 0.0:
-        #     currentVolumeLv = 0.0
-        # volume.SetMasterVolumeLevelScalar(currentVolumeLv, None)
     
     def scrollVertical():
         pyautogui.scroll(120 if Controller.pinchlv>0.0 else -120)
@@ -220,44 +198,7 @@ class Controller:
             ratio = 2.1
         x , y = x_old + delta_x*ratio , y_old + delta_y*ratio
         return (x,y)
-
-    def pinch_control_init(hand_result):
-        Controller.pinchstartxcoord = hand_result.landmark[8].x
-        Controller.pinchstartycoord = hand_result.landmark[8].y
-        Controller.pinchlv = 0
-        Controller.prevpinchlv = 0
-        Controller.framecount = 0
-
-    # Hold final position for 5 frames to change status
-    def pinch_control(hand_result, controlHorizontal, controlVertical):
-        if Controller.framecount == 5:
-            Controller.framecount = 0
-            Controller.pinchlv = Controller.prevpinchlv
-
-            if Controller.pinchdirectionflag == True:
-                controlHorizontal() #x
-
-            elif Controller.pinchdirectionflag == False:
-                controlVertical() #y
-
-        lvx =  Controller.getpinchxlv(hand_result)
-        lvy =  Controller.getpinchylv(hand_result)
-            
-        if abs(lvy) > abs(lvx) and abs(lvy) > Controller.pinch_threshold:
-            Controller.pinchdirectionflag = False
-            if abs(Controller.prevpinchlv - lvy) < Controller.pinch_threshold:
-                Controller.framecount += 1
-            else:
-                Controller.prevpinchlv = lvy
-                Controller.framecount = 0
-
-        elif abs(lvx) > Controller.pinch_threshold:
-            Controller.pinchdirectionflag = True
-            if abs(Controller.prevpinchlv - lvx) < Controller.pinch_threshold:
-                Controller.framecount += 1
-            else:
-                Controller.prevpinchlv = lvx
-                Controller.framecount = 0
+   
 
     def handle_controls(gesture, hand_result):        
         x,y = None,None
@@ -297,18 +238,7 @@ class Controller:
         elif gesture == Gest.TWO_FINGER_CLOSED and Controller.flag:
             pyautogui.doubleClick()
             Controller.flag = False
-
-        elif gesture == Gest.PINCH_MINOR:
-            if Controller.pinchminorflag == False:
-                Controller.pinch_control_init(hand_result)
-                Controller.pinchminorflag = True
-            Controller.pinch_control(hand_result,Controller.scrollHorizontal, Controller.scrollVertical)
         
-        elif gesture == Gest.PINCH_MAJOR:
-            if Controller.pinchmajorflag == False:
-                Controller.pinch_control_init(hand_result)
-                Controller.pinchmajorflag = True
-            Controller.pinch_control(hand_result,Controller.changesystembrightness, Controller.changesystemvolume)
         
 '''
 ----------------------------------------  Main Class  ----------------------------------------
